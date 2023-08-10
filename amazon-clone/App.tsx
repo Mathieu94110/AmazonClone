@@ -1,53 +1,103 @@
 import { StatusBar } from "expo-status-bar";
-import { Button, StyleSheet, Text, View } from "react-native";
-import * as WebBrowser from "expo-web-browser";
+import { StyleSheet, Text, View, Image, Button, Platform } from "react-native";
 import * as Google from "expo-auth-session/providers/google";
+import { useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useState, useEffect } from "react";
+import * as AuthSession from "expo-auth-session";
+import config from "./config";
 
 export default function App() {
-  const [userInfo, setUserInfo] = useState<any>(null);
+  const [userInfo, setUserInfo] = useState();
+  const [auth, setAuth] = useState();
+  const [requireRefresh, setRequireRefresh] = useState(false);
 
-  const [request, response, promptAsync] = Google.useAuthRequest({});
+  const [request, response, promptAsync] = Google.useAuthRequest({
+    androidClientId: config.API_ANDROID_CLIENT_ID,
+    expoClientId: config.API_EXPO_CLIENT_ID,
+  });
 
   useEffect(() => {
-    handleSignInWithGoogle();
+    console.log(response);
+    if (response?.type === "success") {
+      setAuth(response.authentication);
+
+      const persistAuth = async () => {
+        await AsyncStorage.setItem("auth", JSON.stringify(response.authentication));
+      };
+      persistAuth();
+    }
   }, [response]);
 
-  function callGoogleAuth() {
-    promptAsync();
-  }
+  useEffect(() => {
+    const getPersistedAuth = async () => {
+      const jsonValue = await AsyncStorage.getItem("auth");
+      if (jsonValue !== null) {
+        const authFromJson = JSON.parse(jsonValue);
+        console.log("authFromJson =", authFromJson);
+        setAuth(authFromJson);
+        console.log(authFromJson);
 
-  async function handleSignInWithGoogle() {
-    const user = await AsyncStorage.getItem("@user");
-    if (!user) {
-      if (response?.type === "success") {
-        await getUserInfo(response.authentication?.accessToken);
+        setRequireRefresh(
+          !AuthSession.TokenResponse.isTokenFresh({
+            expiresIn: authFromJson.expiresIn,
+            issuedAt: authFromJson.issuedAt,
+          }),
+        );
       }
-    } else {
-      setUserInfo(JSON.parse(user));
+    };
+    getPersistedAuth();
+  }, []);
+
+  const getUserData = async () => {
+    let userInfoResponse = await fetch("https://www.googleapis.com/userinfo/v2/me", {
+      headers: { Authorization: `Bearer ${auth.accessToken}` },
+    });
+
+    userInfoResponse.json().then((data) => {
+      console.log(data);
+      setUserInfo(data);
+    });
+  };
+
+  const showUserData = () => {
+    if (userInfo) {
+      return (
+        <View style={styles.userInfo}>
+          <Image source={{ uri: userInfo.picture }} style={styles.profilePic} />
+          <Text>Bienvenue {userInfo.name}</Text>
+          <Text>{userInfo.email}</Text>
+        </View>
+      );
     }
+  };
+
+  if (requireRefresh) {
+    () => logout();
   }
 
-  async function getUserInfo(token: any) {
-    if (!token) return;
-    try {
-      const response = await fetch("https://www.googleapis.com/userinfo/v2/me", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const user = await response.json();
-      await AsyncStorage.setItem("@user", JSON.stringify(user));
-      setUserInfo(user);
-    } catch (error) {
-      console.log(error);
-    }
-  }
+  const logout = async () => {
+    await AuthSession.revokeAsync(
+      {
+        token: auth.accessToken,
+      },
+      {
+        revocationEndpoint: "https://oauth2.googleapis.com/revoke",
+      },
+    );
+
+    setAuth(undefined);
+    setUserInfo(undefined);
+    await AsyncStorage.removeItem("auth");
+  };
 
   return (
     <View style={styles.container}>
-      <Text>{JSON.stringify(userInfo)}</Text>
-      <Button title="Se connecter avec Google" onPress={callGoogleAuth} />
-      <Button title="Se déconnecter" onPress={() => AsyncStorage.removeItem("@user")} />
+      {showUserData()}
+      <Button
+        title={auth ? "Récupérer les infos utilisateur" : "Se connecter"}
+        onPress={auth ? getUserData : () => promptAsync({ useProxy: true, showInRecents: true })}
+      />
+      {auth ? <Button title="Se déconnecter" onPress={logout} /> : undefined}
       <StatusBar style="auto" />
     </View>
   );
@@ -57,6 +107,14 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  profilePic: {
+    width: 50,
+    height: 50,
+  },
+  userInfo: {
     alignItems: "center",
     justifyContent: "center",
   },
