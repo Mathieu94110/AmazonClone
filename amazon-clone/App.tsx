@@ -19,14 +19,12 @@ export default function App() {
     (prevState, action) => {
       switch (action.type) {
         case "SIGN_IN":
-          console.log("SIGNIN ACTION = ", action);
           return {
             ...prevState,
             isSignout: false,
             userToken: action.token,
           };
         case "SIGN_OUT":
-          console.log("SIGN_OUT = ", action);
           return {
             ...prevState,
             isSignout: true,
@@ -78,7 +76,7 @@ export default function App() {
         ) : (
           <>
             <Tab.Navigator
-              initialRouteName="menu"
+              initialRouteName="home"
               screenOptions={{
                 tabBarShowLabel: false,
                 tabBarActiveTintColor: "#02c3d9",
