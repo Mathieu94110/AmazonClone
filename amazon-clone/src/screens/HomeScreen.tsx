@@ -82,7 +82,7 @@ const HomeScreen = ({ navigation }) => {
         ))}
       </ScrollView>
 
-      {/* <CarouselCard /> */}
+      <CarouselCard />
     </ScrollView>
   );
 };
