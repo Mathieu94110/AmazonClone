@@ -5,9 +5,9 @@ import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 const DeliveryAddressCard = () => {
   return (
     <View style={styles.container}>
-      <MaterialIcons name="location-pin" size={20} />
+      <MaterialIcons name="location-pin" size={20} color={"#fff"} />
       <Text style={styles.deliverText}>Indiquer une adresse de livraison</Text>
-      <MaterialIcons name="keyboard-arrow-down" size={20} />
+      <MaterialIcons name="keyboard-arrow-down" size={20} color={"#fff"} />
     </View>
   );
 };
@@ -16,12 +16,12 @@ export default DeliveryAddressCard;
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "rgba(155, 222, 225,0.7)",
+    backgroundColor: "#2c3f5e",
     flexDirection: "row",
     padding: 10,
   },
   deliverText: {
     fontWeight: "600",
-    color: "#000",
+    color: "#fff",
   },
 });
