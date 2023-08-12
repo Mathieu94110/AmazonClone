@@ -1,13 +1,15 @@
 import { Text, ScrollView, StyleSheet, TextInput, View, Image } from "react-native";
-import React, { useEffect } from "react";
+import React, { useEffect, useContext } from "react";
 import DeliveryAddressCard from "../components/DeliveryAddressCard";
 import CategoryCard from "../components/CategoryCard";
 import CarouselCard from "../components/CarouselCard";
 import { categoryData, devicesDealData, dealData } from "../data/CarouselData";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import DealCard from "../components/DealCard";
+import AuthContext from "../context/authContext";
 
-const HomeScreen = ({ navigation }) => {
+const HomeScreen = ({ navigation, props }) => {
+  const { setUserInfo } = useContext(AuthContext);
   useEffect(
     () =>
       navigation.setOptions({
@@ -78,6 +80,24 @@ const HomeScreen = ({ navigation }) => {
     [],
   );
 
+  useEffect(() => {
+    const getUserData = async () => {
+      let userInfoResponse = await fetch("https://www.googleapis.com/userinfo/v2/me", {
+        headers: { Authorization: `Bearer ${auth.accessToken}` },
+      });
+
+      userInfoResponse.json().then((data) => {
+        setUserInfo(data);
+        console.log(data);
+      });
+    };
+    getUserData();
+  }, []);
+
+  useEffect(() => {
+    console.log(props);
+  }, [props]);
+
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
       <DeliveryAddressCard />
@@ -134,3 +154,6 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
   },
 });
+function useReducer(reducer: any, arg1: { age: number }): [any, any] {
+  throw new Error("Function not implemented.");
+}

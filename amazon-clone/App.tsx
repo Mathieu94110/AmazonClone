@@ -29,7 +29,12 @@ export default function App() {
             ...prevState,
             isSignout: true,
             userToken: null,
-            userInfos: null,
+            userInfo: null,
+          };
+        case "SET_USER_INFO":
+          return {
+            ...prevState,
+            userInfo: action.userInfo,
           };
       }
     },
@@ -48,6 +53,9 @@ export default function App() {
         logout().then(() => {
           dispatch({ type: "SIGN_OUT" });
         });
+      },
+      setUserInfo: async (data) => {
+        dispatch({ type: "SET_USER_INFO", userInfo: data });
       },
     }),
     [],
