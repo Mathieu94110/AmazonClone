@@ -41,29 +41,25 @@ export default function App() {
     {
       isSignout: false,
       userToken: null,
+      userInfo: null,
     },
   );
 
   const authContext = React.useMemo(
     () => ({
       signIn: async (data) => {
+        await getUserData(data);
         dispatch({ type: "SIGN_IN", token: data });
       },
-      signOut: () => {
-        logout().then(() => {
-          dispatch({ type: "SIGN_OUT" });
-        });
-      },
-      setUserInfo: async (data) => {
-        dispatch({ type: "SET_USER_INFO", userInfo: data });
+      signOut: async () => {
+        await logout();
+        dispatch({ type: "SIGN_OUT" });
       },
     }),
     [],
   );
 
   const logout = async () => {
-    console.log("logout", "TOKEN =", state.userToken);
-
     await AuthSession.revokeAsync(
       {
         token: state.userToken,
@@ -75,10 +71,19 @@ export default function App() {
     AsyncStorage.removeItem("auth");
   };
 
+  const getUserData = async (accessToken) => {
+    let userInfoResponse = await fetch("https://www.googleapis.com/userinfo/v2/me", {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
+
+    userInfoResponse.json().then((data) => {
+      dispatch({ type: "SET_USER_INFO", userInfo: data });
+    });
+  };
   return (
     <AuthContext.Provider value={authContext}>
-      <NavigationContainer style={styles.container}>
-        {state.userToken === null ? (
+      <NavigationContainer style={styles.appContainer}>
+        {state.userInfo === null ? (
           <LoginScreen />
         ) : (
           <>
@@ -92,6 +97,7 @@ export default function App() {
               <Tab.Screen
                 name="home"
                 component={HomeScreen}
+                initialParams={state.userInfo}
                 options={{
                   tabBarIcon: ({ color, size }) => (
                     <MaterialCommunityIcons name="home" color={color} size={size} />
@@ -101,6 +107,7 @@ export default function App() {
               <Tab.Screen
                 name="profile"
                 component={ProfileScreen}
+                initialParams={state.userInfo}
                 options={{
                   tabBarIcon: ({ color, size }) => (
                     <MaterialCommunityIcons name="account" color={color} size={size} />
@@ -134,7 +141,7 @@ export default function App() {
 }
 
 const styles = StyleSheet.create({
-  container: {
+  appContainer: {
     flex: 1,
     backgroundColor: "#fff",
     alignItems: "center",

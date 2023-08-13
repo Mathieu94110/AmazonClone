@@ -3,9 +3,9 @@ import React from "react";
 
 const CategoryCard = ({ img, text }) => {
   return (
-    <View style={styles.container}>
+    <View style={styles.categoryCard}>
       <Image style={styles.categoryCardImg} source={{ uri: img }} />
-      <Text>{text}</Text>
+      <Text style={{ fontWeight: "600" }}>{text}</Text>
     </View>
   );
 };
@@ -13,7 +13,7 @@ const CategoryCard = ({ img, text }) => {
 export default CategoryCard;
 
 const styles = StyleSheet.create({
-  container: {
+  categoryCard: {
     alignItems: "center",
     justifyContent: "center",
     marginRight: 20,

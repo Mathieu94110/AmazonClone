@@ -17,7 +17,6 @@ export default function LoginScreen() {
   });
 
   useEffect(() => {
-    console.log(response);
     if (response?.type === "success") {
       signIn(response.authentication?.accessToken);
       const persistAuth = async () => {
@@ -32,7 +31,6 @@ export default function LoginScreen() {
       const jsonValue = await AsyncStorage.getItem("auth");
       if (jsonValue !== null) {
         const authFromJson = JSON.parse(jsonValue);
-        console.log("authFromJson =", authFromJson);
         signIn(authFromJson?.accessToken);
         setRequireRefresh(
           !AuthSession.TokenResponse.isTokenFresh({
