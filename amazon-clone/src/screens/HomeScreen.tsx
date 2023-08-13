@@ -8,7 +8,6 @@ import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import DealCard from "../components/DealCard";
 
 const HomeScreen = ({ navigation, route }) => {
-  const [userGivenName, setUserGivenName] = useState<string>("");
   useEffect(
     () =>
       navigation.setOptions({
@@ -31,7 +30,12 @@ const HomeScreen = ({ navigation, route }) => {
                 placeholderTextColor="gray"
               />
             </View>
-            <Text style={styles.homeScreenHeaderUserGivenName}>Bonjour {userGivenName}</Text>
+            <Text style={styles.homeScreenHeaderUserGivenName}>
+              Bonjour{" "}
+              {route.params.given_name.length > 13
+                ? route.params.given_name.length.substring(0, 13) + "..."
+                : route.params.given_name}
+            </Text>
             <View style={styles.homeScreenHeaderMicIconContainer}>
               <MaterialIcons name="mic-none" size={26} color={"#fff"} />
             </View>
@@ -42,11 +46,6 @@ const HomeScreen = ({ navigation, route }) => {
       }),
     [],
   );
-
-  useEffect(() => {
-    setUserGivenName(route.params.given_name);
-  }, []);
-
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
       <DeliveryAddressCard />
