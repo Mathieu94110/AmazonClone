@@ -1,5 +1,5 @@
-import { StyleSheet, Text, View, Image, ScrollView } from "react-native";
-import React, { useState, useEffect } from "react";
+import { StyleSheet, Text, View, Image, ScrollView, Pressable } from "react-native";
+import React, { useState, useEffect, useContext } from "react";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import ProfileCard from "../components/ProfileCard";
 import { LinearGradient } from "expo-linear-gradient";
@@ -7,8 +7,10 @@ import OrderCard from "../components/OrderCard";
 import AccountCard from "../components/AccountCard";
 import { infoData, OrderData, WishListData } from "../data/ProfileData";
 import { UserInfo } from "../types/user";
+import AuthContext from "../context/authContext";
 
 const ProfileScreen = ({ navigation, route }) => {
+  const { signOut } = useContext(AuthContext);
   const [userInfo, setUserInfo] = useState<UserInfo>({});
 
   useEffect(() => {
@@ -21,7 +23,7 @@ const ProfileScreen = ({ navigation, route }) => {
       headerLeft: () => (
         <Image
           source={{
-            uri: "https://www.clai-communications.com/wp-content/uploads/2020/11/amazon-logo-png-amazon-logo-transparent-11563090659nn2isevb5y.png",
+            uri: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSl0xnXBrrzMs_toOO9UrHzhnZHGfaHNS51pw&usqp=CAU",
           }}
           style={{ height: 30, width: 90, marginLeft: 10, backgroundColor: "" }}
         />
@@ -62,6 +64,11 @@ const ProfileScreen = ({ navigation, route }) => {
               borderRadius: 50,
             }}
           />
+        </View>
+        <View style={styles.titleCont}>
+          <Pressable style={styles.profileScreenlogoutBtn} onPress={signOut}>
+            <Text style={styles.profileScreenlogoutBtnText}>Se déconnecter</Text>
+          </Pressable>
         </View>
         <View style={styles.actionCont}>
           {infoData.map((data, index) => (
@@ -111,6 +118,21 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     padding: 15,
+  },
+  profileScreenlogoutBtn: {
+    width: "100%",
+    height: 40,
+    borderWidth: 1,
+    borderColor: "#000",
+    borderRadius: 50,
+    backgroundColor: "red",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  profileScreenlogoutBtnText: {
+    color: "#fff",
+    fontWeight: "600",
+    fontSize: 16,
   },
   actionCont: {
     marginTop: 20,

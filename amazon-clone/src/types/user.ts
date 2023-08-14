@@ -8,7 +8,7 @@ export type UserInfo = {
   picture: string;
   verified_email: boolean;
 };
-export type userAuth = {
+export type googleToken = {
   accessToken: string;
   expiresIn: string;
   issuedAt: number;

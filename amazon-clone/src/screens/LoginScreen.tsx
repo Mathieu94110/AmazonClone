@@ -2,14 +2,12 @@ import { StyleSheet, View, Text, Image, TouchableOpacity } from "react-native";
 import React, { useState, useEffect, useContext } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { StatusBar } from "expo-status-bar";
-import * as AuthSession from "expo-auth-session";
 import * as Google from "expo-auth-session/providers/google";
 import config from "../../config";
 import AuthContext from "../context/authContext";
 
 export default function LoginScreen() {
-  const [requireRefresh, setRequireRefresh] = useState(false);
-  const { signIn, signOut } = useContext(AuthContext);
+  const { signIn } = useContext(AuthContext);
 
   const [request, response, promptAsync] = Google.useAuthRequest({
     androidClientId: config.API_ANDROID_CLIENT_ID,
@@ -18,34 +16,13 @@ export default function LoginScreen() {
 
   useEffect(() => {
     if (response?.type === "success") {
-      signIn(response.authentication?.accessToken);
+      signIn(response.authentication);
       const persistAuth = async () => {
         await AsyncStorage.setItem("auth", JSON.stringify(response.authentication));
       };
       persistAuth();
     }
   }, [response]);
-
-  useEffect(() => {
-    const getPersistedAuth = async () => {
-      const jsonValue = await AsyncStorage.getItem("auth");
-      if (jsonValue !== null) {
-        const authFromJson = JSON.parse(jsonValue);
-        signIn(authFromJson?.accessToken);
-        setRequireRefresh(
-          !AuthSession.TokenResponse.isTokenFresh({
-            expiresIn: authFromJson.expiresIn,
-            issuedAt: authFromJson.issuedAt,
-          }),
-        );
-      }
-    };
-    getPersistedAuth();
-  }, []);
-
-  if (requireRefresh) {
-    () => signOut();
-  }
 
   return (
     <View style={styles.loginScreen}>

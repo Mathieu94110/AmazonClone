@@ -1,5 +1,5 @@
 import { StyleSheet } from "react-native";
-import React, { useReducer } from "react";
+import React, { useState, useEffect, useReducer } from "react";
 import CartScreen from "./src/screens/CartScreen";
 import HomeScreen from "./src/screens/HomeScreen";
 import ProfileScreen from "./src/screens/ProfileScreen";
@@ -15,6 +15,8 @@ import AuthContext from "./src/context/authContext";
 const Tab = createBottomTabNavigator();
 
 export default function App() {
+  const [requireRefresh, setRequireRefresh] = useState(false);
+
   const [state, dispatch] = useReducer(
     (prevState, action) => {
       switch (action.type) {
@@ -22,13 +24,13 @@ export default function App() {
           return {
             ...prevState,
             isSignout: false,
-            userToken: action.token,
+            googleToken: action.token,
           };
         case "SIGN_OUT":
           return {
             ...prevState,
             isSignout: true,
-            userToken: null,
+            googleToken: null,
             userInfo: null,
           };
         case "SET_USER_INFO":
@@ -40,20 +42,18 @@ export default function App() {
     },
     {
       isSignout: false,
-      userToken: null,
+      googleToken: null,
       userInfo: null,
     },
   );
 
   const authContext = React.useMemo(
     () => ({
-      signIn: async (data) => {
-        await getUserData(data);
-        dispatch({ type: "SIGN_IN", token: data });
+      signIn: async (googleToken) => {
+        await getUserData(googleToken);
       },
       signOut: async () => {
         await logout();
-        dispatch({ type: "SIGN_OUT" });
       },
     }),
     [],
@@ -62,24 +62,48 @@ export default function App() {
   const logout = async () => {
     await AuthSession.revokeAsync(
       {
-        token: state.userToken,
+        token: state.googleToken,
       },
       {
         revocationEndpoint: "https://oauth2.googleapis.com/revoke",
       },
     );
     AsyncStorage.removeItem("auth");
+    dispatch({ type: "SIGN_OUT" });
   };
 
-  const getUserData = async (accessToken) => {
+  const getUserData = async (googleToken) => {
     let userInfoResponse = await fetch("https://www.googleapis.com/userinfo/v2/me", {
-      headers: { Authorization: `Bearer ${accessToken}` },
+      headers: { Authorization: `Bearer ${googleToken.accessToken}` },
     });
 
     userInfoResponse.json().then((data) => {
       dispatch({ type: "SET_USER_INFO", userInfo: data });
     });
+    dispatch({ type: "SIGN_IN", token: googleToken });
   };
+
+  useEffect(() => {
+    const getPersistedAuth = async () => {
+      const jsonValue = await AsyncStorage.getItem("auth");
+      if (jsonValue !== null) {
+        const authFromJson = JSON.parse(jsonValue);
+        getUserData(authFromJson);
+        setRequireRefresh(
+          !AuthSession.TokenResponse.isTokenFresh({
+            expiresIn: authFromJson.expiresIn,
+            issuedAt: authFromJson.issuedAt,
+          }),
+        );
+      }
+    };
+    getPersistedAuth();
+  }, []);
+
+  if (requireRefresh) {
+    () => logout();
+  }
+
   return (
     <AuthContext.Provider value={authContext}>
       <NavigationContainer style={styles.appContainer}>

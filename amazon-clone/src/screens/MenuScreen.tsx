@@ -32,8 +32,8 @@ const MenuScreen = ({ navigation }) => {
     <ScrollView style={styles.menuScreenBody}>
       <LinearGradient colors={["rgba(5, 250, 242,0.4)", "#fff"]}>
         <View style={styles.menuScreenBodyItems}>
-          {categoryData.map((data) => (
-            <MenuItemCard title={data.text} img={data.img} />
+          {categoryData.map((data, index) => (
+            <MenuItemCard key={index} title={data.text} img={data.img} />
           ))}
         </View>
       </LinearGradient>

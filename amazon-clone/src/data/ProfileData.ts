@@ -9,7 +9,7 @@ export const infoData = [
     title: "Votre compte",
   },
   {
-    title: "vos favoris",
+    title: "Vos favoris",
   },
 ];
 
