@@ -1,7 +1,12 @@
 import { StyleSheet, Text, View, Image } from "react-native";
 import React from "react";
 
-const AccountCard = ({ title, value }) => {
+interface AccountCardProps {
+  title: string;
+  value: string;
+}
+
+const AccountCard: React.FC<AccountCardProps> = ({ title, value }) => {
   return (
     <View style={styles.accountCard}>
       <Text style={styles.accountCardTitle}>{title.charAt(0).toUpperCase() + title.slice(1)}</Text>

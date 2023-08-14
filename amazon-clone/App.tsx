@@ -11,14 +11,14 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as AuthSession from "expo-auth-session";
 import AuthContext from "./src/context/authContext";
+import { GoogleToken, RootStackParamList, StateInterface, ActionInterface } from "./src/types";
 
-const Tab = createBottomTabNavigator();
+const Tab = createBottomTabNavigator<RootStackParamList>();
 
-export default function App() {
-  const [requireRefresh, setRequireRefresh] = useState(false);
-
+export default function App(): React.FC {
+  const [requireRefresh, setRequireRefresh] = useState<Boolean>(false);
   const [state, dispatch] = useReducer(
-    (prevState, action) => {
+    (prevState: StateInterface, action: ActionInterface) => {
       switch (action.type) {
         case "SIGN_IN":
           return {
@@ -49,7 +49,7 @@ export default function App() {
 
   const authContext = React.useMemo(
     () => ({
-      signIn: async (googleToken) => {
+      signIn: async (googleToken: GoogleToken) => {
         await getUserData(googleToken);
       },
       signOut: async () => {
@@ -59,32 +59,33 @@ export default function App() {
     [],
   );
 
-  const logout = async () => {
+  const logout = async (): Promise<void> => {
     await AuthSession.revokeAsync(
       {
-        token: state.googleToken,
+        token: state.googleToken.accessToken,
       },
       {
         revocationEndpoint: "https://oauth2.googleapis.com/revoke",
       },
-    );
-    AsyncStorage.removeItem("auth");
-    dispatch({ type: "SIGN_OUT" });
+    ).then(() => {
+      AsyncStorage.removeItem("auth");
+      dispatch({ type: "SIGN_OUT" });
+    });
   };
 
-  const getUserData = async (googleToken) => {
+  const getUserData = async (googleToken: GoogleToken): Promise<void> => {
     let userInfoResponse = await fetch("https://www.googleapis.com/userinfo/v2/me", {
       headers: { Authorization: `Bearer ${googleToken.accessToken}` },
     });
 
     userInfoResponse.json().then((data) => {
       dispatch({ type: "SET_USER_INFO", userInfo: data });
+      dispatch({ type: "SIGN_IN", token: googleToken });
     });
-    dispatch({ type: "SIGN_IN", token: googleToken });
   };
 
   useEffect(() => {
-    const getPersistedAuth = async () => {
+    const getPersistedAuth = async (): Promise<void> => {
       const jsonValue = await AsyncStorage.getItem("auth");
       if (jsonValue !== null) {
         const authFromJson = JSON.parse(jsonValue);
@@ -103,7 +104,6 @@ export default function App() {
   if (requireRefresh) {
     () => logout();
   }
-
   return (
     <AuthContext.Provider value={authContext}>
       <NavigationContainer style={styles.appContainer}>

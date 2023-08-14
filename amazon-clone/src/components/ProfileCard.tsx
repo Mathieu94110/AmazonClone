@@ -1,11 +1,14 @@
-import { StyleSheet, Text, View, Dimensions } from "react-native";
+import { StyleSheet, Text, View, useWindowDimensions } from "react-native";
 import React from "react";
 
-const dimension = Dimensions.get("window").width;
+interface ProfileCardProps {
+  title: string;
+}
 
-const ProfileCard = ({ title }) => {
+const ProfileCard: React.FC<ProfileCardProps> = ({ title }) => {
+  const { width } = useWindowDimensions();
   return (
-    <View style={styles.container}>
+    <View style={[styles.profileCard, { width: width / 2 - 25 }]}>
       <Text>{title}</Text>
     </View>
   );
@@ -14,11 +17,10 @@ const ProfileCard = ({ title }) => {
 export default ProfileCard;
 
 const styles = StyleSheet.create({
-  container: {
+  profileCard: {
     backgroundColor: "#f0f0f0",
     borderWidth: 1,
     borderColor: "#b8baba",
-    width: dimension / 2 - 25,
     paddingTop: 10,
     paddingBottom: 10,
     justifyContent: "center",

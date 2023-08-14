@@ -1,12 +1,12 @@
 import { StyleSheet, View, Text, Image, TouchableOpacity } from "react-native";
-import React, { useState, useEffect, useContext } from "react";
+import React, { useEffect, useContext } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { StatusBar } from "expo-status-bar";
 import * as Google from "expo-auth-session/providers/google";
 import config from "../../config";
 import AuthContext from "../context/authContext";
 
-export default function LoginScreen() {
+export default function LoginScreen(): React.FC {
   const { signIn } = useContext(AuthContext);
 
   const [request, response, promptAsync] = Google.useAuthRequest({
@@ -17,7 +17,7 @@ export default function LoginScreen() {
   useEffect(() => {
     if (response?.type === "success") {
       signIn(response.authentication);
-      const persistAuth = async () => {
+      const persistAuth = async (): Promise<void> => {
         await AsyncStorage.setItem("auth", JSON.stringify(response.authentication));
       };
       persistAuth();

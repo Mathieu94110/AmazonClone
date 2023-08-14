@@ -3,8 +3,9 @@ import React, { useEffect } from "react";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import DeliveryAddressCard from "../components/DeliveryAddressCard";
 import CartItem from "../components/CartItem";
+import { HomeTabScreenProps } from "../types";
 
-const CartScreen = ({ navigation }) => {
+const CartScreen = ({ navigation }: HomeTabScreenProps<"cart">) => {
   useEffect(
     () =>
       navigation.setOptions({
@@ -26,7 +27,7 @@ const CartScreen = ({ navigation }) => {
           </View>
         ),
       }),
-    [],
+    [navigation],
   );
 
   return (

@@ -1,7 +1,12 @@
 import { StyleSheet, Text, View, Image } from "react-native";
 import React from "react";
 
-const MenuItemCard = ({ title, img }) => {
+interface MenuItemCardProps {
+  title: string;
+  img: string;
+}
+
+const MenuItemCard: React.FC<MenuItemCardProps> = ({ title, img }) => {
   return (
     <View style={styles.menuItemCard}>
       <View>

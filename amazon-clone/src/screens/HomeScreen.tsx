@@ -1,13 +1,14 @@
 import { Text, ScrollView, StyleSheet, TextInput, View, Image } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import DeliveryAddressCard from "../components/DeliveryAddressCard";
 import CategoryCard from "../components/CategoryCard";
 import CarouselCard from "../components/CarouselCard";
 import { categoryData, devicesDealData, dealData } from "../data/CarouselData";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import DealCard from "../components/DealCard";
+import { HomeTabScreenProps } from "../types/navigation";
 
-const HomeScreen = ({ navigation, route }) => {
+const HomeScreen = ({ navigation, route }: HomeTabScreenProps<"home">) => {
   useEffect(
     () =>
       navigation.setOptions({

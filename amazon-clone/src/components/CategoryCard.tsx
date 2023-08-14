@@ -1,7 +1,12 @@
 import { StyleSheet, Text, View, Image } from "react-native";
 import React from "react";
 
-const CategoryCard = ({ img, text }) => {
+interface CategoryCardProps {
+  img: string;
+  text: string;
+}
+
+const CategoryCard: React.FC<CategoryCardProps> = ({ img, text }) => {
   return (
     <View style={styles.categoryCard}>
       <Image style={styles.categoryCardImg} source={{ uri: img }} />

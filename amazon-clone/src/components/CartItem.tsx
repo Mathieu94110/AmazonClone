@@ -2,7 +2,7 @@ import { StyleSheet, Text, Image, View, Pressable } from "react-native";
 import React from "react";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 
-const CartItem = () => {
+const CartItem: React.FC = () => {
   return (
     <View style={styles.cartItem}>
       <View style={styles.cartItemTopContainer}>

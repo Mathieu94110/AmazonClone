@@ -4,8 +4,9 @@ import { LinearGradient } from "expo-linear-gradient";
 import MenuItemCard from "../components/MenuItemCard";
 import { categoryData } from "../data/CarouselData";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import { HomeTabScreenProps } from "../types";
 
-const MenuScreen = ({ navigation }) => {
+const MenuScreen = ({ navigation }: HomeTabScreenProps<"menu">) => {
   useEffect(() => {
     navigation.setOptions({
       headerTitle: "",
@@ -26,7 +27,7 @@ const MenuScreen = ({ navigation }) => {
         </View>
       ),
     });
-  }, []);
+  }, [navigation]);
 
   return (
     <ScrollView style={styles.menuScreenBody}>

@@ -1,11 +1,16 @@
-import { StyleSheet, Text, View, Image, Dimensions } from "react-native";
+import { StyleSheet, Text, View, Image, useWindowDimensions } from "react-native";
 import React from "react";
 
-let dimension = Dimensions.get("window").width;
-const DealCard = ({ text, img }) => {
+interface DealCardProps {
+  text: string;
+  img: string;
+}
+
+const DealCard: React.FC<DealCardProps> = ({ text, img }) => {
+  const { width } = useWindowDimensions();
   return (
     <View style={styles.dealCard}>
-      <View style={styles.dealCardItem}>
+      <View style={[styles.dealCardItem, { width: width / 2 - 45 }]}>
         <Image source={{ uri: img }} style={styles.dealCardImage} />
         <Text style={styles.dealCardText}>{text}</Text>
       </View>
@@ -32,7 +37,6 @@ const styles = StyleSheet.create({
   },
 
   dealCardItem: {
-    width: dimension / 2 - 45,
     marginBottom: 5,
   },
 });

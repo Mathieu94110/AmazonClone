@@ -1,10 +1,10 @@
 import * as React from "react";
-import { View, StyleSheet, Dimensions, Image } from "react-native";
+import { View, StyleSheet, Image, useWindowDimensions } from "react-native";
 import Carousel from "react-native-reanimated-carousel";
 import { data } from "../data/CarouselData";
 
-const CarouselCard = () => {
-  const width = Dimensions.get("window").width;
+const CarouselCard: React.FC = () => {
+  const { width } = useWindowDimensions();
   return (
     <View style={{ flex: 1 }}>
       <Carousel
@@ -14,7 +14,7 @@ const CarouselCard = () => {
         autoPlay={true}
         data={data}
         scrollAnimationDuration={2000}
-        renderItem={({ index }) => (
+        renderItem={({ index }: { index: number }) => (
           <View key={index} style={styles.carouselCardView}>
             <Image style={styles.carouselCardImg} source={{ uri: data[index] }} />
           </View>
