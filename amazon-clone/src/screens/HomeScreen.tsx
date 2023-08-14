@@ -32,8 +32,8 @@ const HomeScreen = ({ navigation, route }) => {
             </View>
             <Text style={styles.homeScreenHeaderUserGivenName}>
               Bonjour{" "}
-              {route.params.given_name.length > 13
-                ? route.params.given_name.length.substring(0, 13) + "..."
+              {route.params.given_name?.length > 13
+                ? route.params.given_name?.length.substring(0, 13) + "..."
                 : route.params.given_name}
             </Text>
             <View style={styles.homeScreenHeaderMicIconContainer}>

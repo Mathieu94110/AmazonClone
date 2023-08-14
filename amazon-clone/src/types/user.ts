@@ -8,3 +8,11 @@ export type UserInfo = {
   picture: string;
   verified_email: boolean;
 };
+export type userAuth = {
+  accessToken: string;
+  expiresIn: string;
+  issuedAt: number;
+  scope: string;
+  state: string;
+  tokenType: "Bearer";
+};
