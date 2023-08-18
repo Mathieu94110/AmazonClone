@@ -60,17 +60,16 @@ export default function App(): React.FC {
   );
 
   const logout = async (): Promise<void> => {
+    AsyncStorage.removeItem("auth");
+    dispatch({ type: "SIGN_OUT" });
     await AuthSession.revokeAsync(
       {
-        token: state.googleToken.accessToken,
+        token: state?.googleToken?.accessToken,
       },
       {
         revocationEndpoint: "https://oauth2.googleapis.com/revoke",
       },
-    ).then(() => {
-      AsyncStorage.removeItem("auth");
-      dispatch({ type: "SIGN_OUT" });
-    });
+    );
   };
 
   const getUserData = async (googleToken: GoogleToken): Promise<void> => {
@@ -101,9 +100,12 @@ export default function App(): React.FC {
     getPersistedAuth();
   }, []);
 
-  if (requireRefresh) {
-    () => logout();
-  }
+  useEffect(() => {
+    if (requireRefresh) {
+      logout();
+    }
+  }, [requireRefresh]);
+
   return (
     <AuthContext.Provider value={authContext}>
       <NavigationContainer style={styles.appContainer}>
